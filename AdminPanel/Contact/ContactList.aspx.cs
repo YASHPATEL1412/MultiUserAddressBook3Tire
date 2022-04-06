@@ -92,22 +92,20 @@ public partial class AdminPanel_Contact_ContactList : System.Web.UI.Page
     private void DeleteContact(SqlInt32 ContactID )  /*string FilePath*/
     {
         ContactBAL balContact = new ContactBAL();
-        
-        if (balContact.DeleteImage(ContactID, Convert.ToInt32(Session["UserID"])))
+
+        DeleteContactCategory(ContactID);
+
+        #region Delete Image
+        FileInfo file = new FileInfo(Server.MapPath("~/Content/UserPhoto/" + ContactID.ToString() + ".jpg"));
+        if (file.Exists)
         {
-            DeleteContactCategory(ContactID);
+            file.Delete();
+        }
+        #endregion Delete Image
+        DeleteContactImage(ContactID);
 
-            #region Delete Image
-            FileInfo file = new FileInfo(Server.MapPath("~/Content/UserPhoto/" + ContactID.ToString() + ".jpg"));
-
-            if (file.Exists)
-            {
-                file.Delete();
-            }
-            #endregion Delete Image
-
-            DeleteContactImage(ContactID);
-
+        if (balContact.DeleteContactRecord(ContactID, Convert.ToInt32(Session["UserID"])))
+        {
             lblMessage.ForeColor = Color.Green;
             lblMessage.Text = "Data Delete Successfully!";
         }
